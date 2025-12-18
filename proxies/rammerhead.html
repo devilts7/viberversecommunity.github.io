@@ -5,27 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rammerhead | Viberverse</title>
     <link rel="stylesheet" href="style.css" />
-    <link rel="shortcut icon" href="/media/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="/media/logo.png" type="image/x-icon" />
   </head>
   <body>
-    <iframe src="https://mac-web.github.io/macvg/" class="proxy-frame"></iframe>
+    <div style="margin: 10px;">
+      <!-- Input and button to pick the URL -->
+      <label for="url-input">Enter a URL:</label>
+      <input
+        id="url-input"
+        type="text"
+        placeholder="https://example.com"
+        style="width: 300px;"
+      />
+      <button id="load-url" style="cursor: pointer;">Load URL</button>
+    </div>
+
+    <!-- Iframe for proxy functionality -->
+    <iframe
+      id="proxy-frame"
+      src="https://florr.ehcp.eu/"
+      class="proxy-frame"
+      style="width: 100%; height: 90vh; border: none;"
+    >
+      Your browser does not support iframes.
+    </iframe>
+
     <script>
-      const titleTag = document.getElementsByTagName("title")[0];
-      if (localStorage.getItem("tab-name")) {
-        titleTag.innerHTML = localStorage.getItem("tab-name");
-      }
+      // Function to load the URL into the iframe
+      const loadUrlButton = document.getElementById("load-url");
+      const urlInput = document.getElementById("url-input");
+      const iframe = document.getElementById("proxy-frame");
+
+      // Handle clicks on the "Load URL" button
+      loadUrlButton.addEventListener("click", () => {
+        const newUrl = urlInput.value.trim();
+        if (newUrl) {
+          // Add "http://" if the URL does not already contain "http://" or "https://"
+          const validUrl =
+            newUrl.startsWith("http://") || newUrl.startsWith("https://")
+              ? newUrl
+              : `https://${newUrl}`;
+
+          // Load the new URL into the iframe
+          iframe.src = validUrl;
+        } else {
+          alert("Please enter a valid URL.");
+        }
+      });
+
+      // Panic redirect functionality
       document.addEventListener("keydown", (e) => {
-        let panicStorage = localStorage.getItem("panic");
-        let panicHref = localStorage.getItem("panicHref")
-          ? localStorage.getItem("panicHref")
-          : "https://google.com";
-        if (
-          (panicStorage && e.key === panicStorage) ||
-          (!panicStorage && e.key === "`")
-        ) {
+        const panicKey = localStorage.getItem("panic") || "`"; // Default to "`"
+        const panicHref = localStorage.getItem("panicHref") || "https://google.com";
+
+        if (e.key === panicKey) {
+          // Redirect to panicHref when the panic key is pressed
           window.location.href = panicHref;
         }
       });
+
+      // Update the title based on localStorage tab-name value
+      const titleTag = document.getElementsByTagName("title")[0];
+      const tabName = localStorage.getItem("tab-name");
+      if (tabName) {
+        titleTag.innerHTML = tabName;
+      }
     </script>
   </body>
 </html>
